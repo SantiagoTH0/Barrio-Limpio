@@ -64,6 +64,18 @@ Route::middleware(['auth'])->group(function () {
 
         Route::post('/citizen/reports', [\App\Http\Controllers\ReportManagementController::class, 'store'])
             ->name('citizen.reports.store');
+
+        // Nueva vista: listado de reportes del ciudadano autenticado
+        Route::get('/dashboard/citizen/reports', function () {
+            $user = auth()->user();
+            $reports = \App\Models\Report::with(['type', 'crew', 'assignedUser'])
+                ->where('user_id', $user->id)
+                ->orderByDesc('created_at')
+                ->get();
+            return view('dashboard.citizen_reports', [
+                'reports' => $reports,
+            ]);
+        })->name('dashboard.citizen.reports');
     });
 
     Route::get('/dashboard/official', [\App\Http\Controllers\AdminDashboardController::class, 'index'])
@@ -124,6 +136,33 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/official/users', [\App\Http\Controllers\AdminDashboardController::class, 'usersView'])
         ->middleware('role:official')
         ->name('dashboard.official.users');
+
+    Route::get('/dashboard/official/collaborators', function () {
+        $crewUsers = \App\Models\User::where('role', \App\Models\User::ROLE_CREW)
+            ->orderBy('name')
+            ->get(['id','name','email']);
+        return view('dashboard.official_collaborators', [
+            'crew_users' => $crewUsers,
+        ]);
+    })
+        ->middleware('role:official')
+        ->name('dashboard.official.collaborators');
+
+    Route::get('/dashboard/official/collaborators/{user}/tasks', function (\App\Models\User $user) {
+        if ($user->role !== \App\Models\User::ROLE_CREW) {
+            abort(404);
+        }
+        $tasks = \App\Models\Report::with(['type','user','crew','assignedUser'])
+            ->where('assigned_user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+        return view('dashboard.official_collaborator_tasks', [
+            'collaborator' => $user,
+            'tasks' => $tasks,
+        ]);
+    })
+        ->middleware('role:official')
+        ->name('dashboard.official.collaborators.tasks');
 
     // Endpoints de administración de usuarios (solo official)
     Route::middleware('role:official')->group(function () {

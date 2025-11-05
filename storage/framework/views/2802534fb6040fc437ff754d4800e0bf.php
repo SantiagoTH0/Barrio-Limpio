@@ -63,7 +63,7 @@
     <header>
         <div>
             <h1>Panel Equipo de Limpieza/Mantenimiento</h1>
-            <div class="muted">Hola, {{ auth()->user()->name }} ({{ auth()->user()->email }}) — Rol: {{ ['citizen'=>'ciudadano','official'=>'admin','crew'=>'colaborador'][auth()->user()->role] ?? auth()->user()->role }}</div>
+            <div class="muted">Hola, <?php echo e(auth()->user()->name); ?> (<?php echo e(auth()->user()->email); ?>) — Rol: <?php echo e(['citizen'=>'ciudadano','official'=>'admin','crew'=>'colaborador'][auth()->user()->role] ?? auth()->user()->role); ?></div>
         </div>
         <div>
             <a href="/logout" class="button" onclick="event.preventDefault(); fetch('/logout',{method:'POST', credentials:'include'}).then(()=>location.href='/login');">Cerrar sesión</a>
@@ -138,4 +138,4 @@ document.addEventListener('click', function(e){
 loadTasks();
 </script>
 </body>
-</html>
+</html><?php /**PATH D:\Proyectos\Barrio-Limpio\resources\views/dashboard/crew.blade.php ENDPATH**/ ?>
