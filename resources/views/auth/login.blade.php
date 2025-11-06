@@ -43,36 +43,36 @@ button:disabled { opacity: .6; cursor: not-allowed; }
         .nav a.active { background: #22c55e; color: #062b1a; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); }
         .button { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; color: #0b2a3c; border: 1px solid #0ea5a7; border-radius: 999px; padding: 10px 14px; font-size: 14px; text-decoration: none; }
         .button:hover { background: #f0fdfa; }
+        .button.sm { padding: 8px 12px; font-size: 13px; }
+        /* Evitar desbordes y centrar el formulario dentro del contenedor */
+        *, *::before, *::after { box-sizing: border-box; }
+        form#loginForm { max-width: 380px; margin: 0 auto; }
+        
+        input, button, .button { max-width: 100%; box-sizing: border-box; }
     </style>
 </head>
 <body>
 <div class="bg-illustration" aria-hidden="true"></div>
 <header class="topbar">
   <div class="brand">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path fill="#22c55e" d="M12 2c-1.8 5.5-5.5 7.8-9 8.4 2.7 3.6 7.1 6.3 9 9.6 1.9-3.3 6.3-6 9-9.6-3.5-.6-7.2-2.9-9-8.4z"/>
-    </svg>
+    <!-- Logo SVG eliminado -->
     <span>Barrio Limpio</span>
   </div>
   <nav class="nav">
-    <a href="/">Inicio</a>
-    <!-- Eliminado: <a href="/reports">Mis Reportes</a> -->
-    <a href="https://t.me/SantiagoTH0bot" target="_blank" rel="noopener" class="active">Ayuda</a>
+    <a href="/" >Inicio</a>
+    <a href="https://t.me/SantiagoTH0bot" target="_blank" rel="noopener">Ayuda</a>
   </nav>
 </header>
 <div class="container">
     <h1>Iniciar sesión</h1>
-    <p>Prueba el login desde el navegador. Este formulario llama al endpoint <code>POST /login</code> y muestra la respuesta.
-        Tras el login, puedes consultar <code>GET /me</code> y hacer <code>POST /logout</code> con las acciones abajo.</p>
 
     <form id="loginForm">
         @csrf
         <div class="row">
             <div>
                 <label for="email">Email</label>
-                <input id="email" name="email" type="email" autocomplete="email" placeholder="admin@barrio-limpio.local" required />
+                <input id="email" name="email" type="email" autocomplete="email" placeholder="tu correo" required />
                 <div class="spacer"></div>
-                <div class="muted">Usuarios demo: <span class="badge">admin@barrio-limpio.local / admin123</span>, <span class="badge">ciudadano@barrio-limpio.local / ciudadano123</span>, <span class="badge">equipo@barrio-limpio.local / equipo123</span></div>
             </div>
             <div>
                 <label for="password">Password</label>
@@ -89,27 +89,23 @@ button:disabled { opacity: .6; cursor: not-allowed; }
         </div>
         <div class="flex">
             <button type="submit" id="loginBtn">Iniciar sesión</button>
-            <button type="button" id="meBtn" title="Consulta el usuario autenticado">/me</button>
-            <button type="button" id="logoutBtn" title="Cerrar sesión">Logout</button>
         </div>
     </form>
 
-    <div id="response" class="card muted">
-      <div class="flex" style="justify-content:space-between;align-items:center">
-        <span>¿Nuevo Usuario?</span>
-        <a href="/register/citizen" class="button" id="registerCitizenLink">Regístrate</a>
-      </div>
-      <div id="response-content" class="muted" style="margin-top:8px"></div>
+    <div class="flex center" style="justify-content:center;margin-top:12px">
+      <span class="muted">¿Nuevo Usuario?</span>
+      <a href="/register/citizen" class="button sm" id="registerCitizenLink">Regístrate</a>
     </div>
+  
 </div>
 
 <script>
 const el = (sel) => document.querySelector(sel);
 const show = (msg, type = null) => {
   const box = el('#response');
-  box.className = 'card muted' + (type ? ' ' + type : '');
   const content = el('#response-content');
-  if (!content) return;
+  if (!box || !content) { return; }
+  box.className = 'card muted' + (type ? ' ' + type : '');
   if (typeof msg === 'string') { content.textContent = msg; return; }
   content.textContent = JSON.stringify(msg, null, 2);
 };
@@ -141,28 +137,18 @@ el('#loginForm').addEventListener('submit', async (e) => {
     const email = el('#email').value.trim();
     const password = el('#password').value;
     const { ok, status, data } = await postJson('/login', { email, password });
-    show({ ok, status, data }, ok ? 'success' : 'error');
+    // show({ ok, status, data }, ok ? 'success' : 'error'); // ya no mostramos el recuadro
     if (ok) {
-      // Redirigir al dashboard tras login
       const redirect = (data && data.redirect) ? data.redirect : '/dashboard';
       window.location.href = redirect;
     }
   } catch (err) {
-    show('Error al iniciar sesión', 'error');
+    // show('Error al iniciar sesión', 'error'); // sin recuadro
   } finally {
     el('#loginBtn').disabled = false;
   }
 });
 
-el('#meBtn').addEventListener('click', async () => {
-  const { ok, status, data } = await getJson('/me');
-  show({ ok, status, data }, ok ? 'success' : 'error');
-});
-
-el('#logoutBtn').addEventListener('click', async () => {
-  const { ok, status, data } = await postJson('/logout', {});
-  show({ ok, status, data }, ok ? 'success' : 'error');
-});
 
 // Mostrar/Ocultar contraseña del login
 const toggleBtn = document.getElementById('toggleLoginPassword');

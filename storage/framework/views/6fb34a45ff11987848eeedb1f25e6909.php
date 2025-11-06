@@ -94,6 +94,7 @@
           <select id="create-role" class="select"></select>
         </div>
         <div style="flex:1 1 200px"><input id="create-password" type="password" class="input" placeholder="Contraseña" /></div>
+        <div style="flex:1 1 200px"><input id="create-password-confirm" type="password" class="input" placeholder="Repite contraseña" /></div>
         <div style="flex:0 0 auto"><button id="btn-create" class="btn">Crear</button></div>
       </div>
       <div id="create-feedback" class="feedback"></div>
@@ -246,13 +247,25 @@ function createUser(){
   const email=document.getElementById('create-email').value.trim();
   const role=document.getElementById('create-role').value;
   const password=document.getElementById('create-password').value;
+  const passwordConfirm=document.getElementById('create-password-confirm').value;
   const feedback=document.getElementById('create-feedback');
+  // Validación: ambas contraseñas presentes y coinciden
+  const pwd = (password||'').trim();
+  const pwdc = (passwordConfirm||'').trim();
+  if(!pwd || !pwdc){
+    feedback.textContent='Debe ingresar la contraseña dos veces.';
+    return;
+  }
+  if(pwd !== pwdc){
+    feedback.textContent='Las contraseñas no coinciden.';
+    return;
+  }
   feedback.textContent='Creando usuario...';
   return fetch('/official/users',{
     method:'POST',
     headers:{'Content-Type':'application/json','Accept':'application/json'},
     credentials:'same-origin',
-    body: JSON.stringify({name,email,role, password: password||null})
+    body: JSON.stringify({name,email,role, password: pwd})
   }).then(r=>r.json().then(j=>({ok:r.ok, body:j})))
     .then(({ok, body})=>{
       if(!ok) throw new Error(body.message||'Error al crear usuario');
@@ -261,6 +274,7 @@ function createUser(){
       document.getElementById('create-name').value='';
       document.getElementById('create-email').value='';
       document.getElementById('create-password').value='';
+      document.getElementById('create-password-confirm').value='';
       loadUsers({ q: document.getElementById('filter-q').value.trim(), role: document.getElementById('filter-role').value });
     })
     .catch(err=>{feedback.textContent=err.message});

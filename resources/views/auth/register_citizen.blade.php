@@ -33,20 +33,22 @@
     .nav a.active { background: #22c55e; color: #062b1a; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); }
     .button { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; color: #0b2a3c; border: 1px solid #0ea5a7; border-radius: 999px; padding: 10px 14px; font-size: 14px; text-decoration: none; }
     .button:hover { background: #f0fdfa; }
+    /* Evitar desbordes y centrar el formulario dentro del contenedor */
+    *, *::before, *::after { box-sizing: border-box; }
+    form#registerForm { max-width: 380px; margin: 0 auto; }
+    input, button, .button { max-width: 100%; box-sizing: border-box; }
   </style>
 </head>
 <body>
 <div class="bg-illustration" aria-hidden="true"></div>
 <header class="topbar">
   <div class="brand">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path fill="#22c55e" d="M12 2c-1.8 5.5-5.5 7.8-9 8.4 2.7 3.6 7.1 6.3 9 9.6 1.9-3.3 6.3-6 9-9.6-3.5-.6-7.2-2.9-9-8.4z"/>
-    </svg>
+    <!-- Logo SVG eliminado -->
     <span>Barrio Limpio</span>
   </div>
   <nav class="nav">
-    <a href="/">Inicio</a>
-    <a href="https://t.me/SantiagoTH0bot" target="_blank" rel="noopener" class="active">Ayuda</a>
+    <a href="/" >Inicio</a>
+    <a href="https://t.me/SantiagoTH0bot" target="_blank" rel="noopener">Ayuda</a>
   </nav>
 </header>
 <div class="container">
@@ -62,7 +64,7 @@
       </div>
       <div>
         <label for="email">Email</label>
-        <input id="email" name="email" type="email" autocomplete="email" placeholder="tu@email.com" required />
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="tu correo" required />
       </div>
       <div>
         <label for="password">Contraseña</label>
@@ -79,16 +81,16 @@
     </div>
   </form>
 
-  <div id="response" class="card muted"><div id="response-content" class="muted"></div></div>
+  
 </div>
 
 <script>
 const el = (sel) => document.querySelector(sel);
 const show = (msg, type = null) => {
   const box = el('#response');
-  box.className = 'card muted' + (type ? ' ' + type : '');
   const content = el('#response-content');
-  if (!content) return;
+  if (!box || !content) { console[type === 'error' ? 'error' : 'log'](msg); return; }
+  box.className = 'card muted' + (type ? ' ' + type : '');
   if (typeof msg === 'string') { content.textContent = msg; return; }
   content.textContent = JSON.stringify(msg, null, 2);
 };
