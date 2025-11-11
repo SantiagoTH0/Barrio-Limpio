@@ -1,0 +1,26 @@
+<?php
+// Index de producción para InfinityFree (subir a htdocs/)
+
+define('LARAVEL_START', microtime(true));
+
+// Modo mantenimiento
+if (file_exists($maintenance = __DIR__ . '/storage/framework/maintenance.php')) {
+    require $maintenance;
+}
+
+// Autoloader de Composer
+require __DIR__ . '/vendor/autoload.php';
+
+// Bootstrap de la app
+$app = require_once __DIR__ . '/bootstrap/app.php';
+
+// Kernel HTTP
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+);
+
+$response->send();
+
+$kernel->terminate($request, $response);

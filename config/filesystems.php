@@ -47,6 +47,17 @@ return [
             'report' => false,
         ],
 
+        // Nuevo disco para subir archivos directamente en public/uploads,
+        // útil en hostings que no soportan symlinks (p. ej. InfinityFree).
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('uploads'),
+            'url' => env('APP_URL').'/uploads',
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

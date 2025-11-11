@@ -7,6 +7,9 @@ use App\Models\Crew;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ReportManagementController extends Controller
 {
@@ -165,10 +168,71 @@ class ReportManagementController extends Controller
         $report->zone = $validated['zone'];
         $report->description = $validated['description'];
 
-        // Si viene archivo, guardarlo y registrar su URL pública
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('reports', 'public');
-            $report->photo_url = \Illuminate\Support\Facades\Storage::url($path);
+            if (app()->environment('local')) {
+                // En local preferimos 'public' si existe el symlink, si no usamos 'uploads'
+                $useUploads = !is_dir(public_path('storage')) || !is_link(public_path('storage'));
+                $disk = $useUploads ? 'uploads' : 'public';
+            } else {
+                // En producción forzamos 'uploads' para evitar depender del symlink
+                $disk = 'uploads';
+            }
+
+            // Asegurar que el directorio exista en el disco seleccionado
+            try {
+                $diskFs = Storage::disk($disk);
+                if (method_exists($diskFs, 'makeDirectory')) {
+                    $diskFs->makeDirectory('reports');
+                }
+            } catch (\Throwable $e) {
+                Log::warning('No se pudo asegurar el directorio de reports', ['disk' => $disk, 'error' => $e->getMessage()]);
+            }
+
+            // Intentar guardar con Storage::store
+            $path = $request->file('photo')->store('reports', $disk);
+
+            // Si falla o el archivo no existe en disco, aplicar un fallback manual
+            $storedOk = $path && Storage::disk($disk)->exists($path);
+            if (!$storedOk && $disk === 'uploads') {
+                try {
+                    $ext = $request->file('photo')->getClientOriginalExtension();
+                    $filename = 'report_'.time().'_'.Str::random(6).($ext ? ('.'.$ext) : '');
+                    $targetDir = public_path('uploads/reports');
+                    if (!is_dir($targetDir)) @mkdir($targetDir, 0775, true);
+                    $request->file('photo')->move($targetDir, $filename);
+                    $path = 'reports/'.$filename;
+                    $storedOk = file_exists($targetDir.DIRECTORY_SEPARATOR.$filename);
+                } catch (\Throwable $e) {
+                    Log::error('Error en fallback de guardado de foto', ['error' => $e->getMessage()]);
+                }
+            }
+
+            if ($storedOk) {
+                // Usar URL relativa cuando el disco es uploads para evitar http/https mixto
+                if ($disk === 'uploads') {
+                    $report->photo_url = '/uploads/'.$path;
+                    // Copiar también a la ruta /uploads en raíz si difiere de public_path
+                    try {
+                        $publicUploads = public_path('uploads');
+                        $rootUploads = base_path('uploads');
+                        if ($publicUploads !== $rootUploads) {
+                            $srcFile = $publicUploads.DIRECTORY_SEPARATOR.$path;
+                            $dstDir = $rootUploads.DIRECTORY_SEPARATOR.dirname($path);
+                            if (!is_dir($dstDir)) @mkdir($dstDir, 0775, true);
+                            $dstFile = $rootUploads.DIRECTORY_SEPARATOR.$path;
+                            if (file_exists($srcFile) && !file_exists($dstFile)) {
+                                @copy($srcFile, $dstFile);
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        Log::warning('No se pudo duplicar la imagen a /uploads raíz', ['error' => $e->getMessage()]);
+                    }
+                } else {
+                    $report->photo_url = Storage::disk('public')->url($path);
+                }
+            } else {
+                Log::error('No se pudo guardar la foto del reporte', ['disk' => $disk]);
+            }
         }
         if (array_key_exists('location_text', $validated)) {
             $report->location_text = $validated['location_text'];

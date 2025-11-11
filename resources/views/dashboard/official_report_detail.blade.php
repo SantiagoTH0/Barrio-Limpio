@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalle del reporte #{{ $report->id }} - Barrio Limpio</title>
+  <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #0ea5a7 0%, #0b7a88 45%, #0f4f64 100%); color: #0f172a; min-height: 100vh; position: relative; }
     .container{max-width:1000px;margin:40px auto;background:#ffffff;border:none;border-radius:18px;box-shadow:0 18px 40px rgba(3,102,94,0.15);padding:24px}
-    header{display:flex;align-items:center;justify-content:space-between}h1{font-size:22px;margin:0}.muted{color:#6b7280}
+    .container > header{display:flex;align-items:center;justify-content:space-between}h1{font-size:22px;margin:0}.muted{color:#6b7280}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
     .card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px}
-    .btn{display:inline-block;background:linear-gradient(90deg, #2ccd6f 0%, #11b072 100%);color:#fff;text-decoration:none;padding:10px 14px;border-radius:12px;border:none;cursor:pointer;box-shadow:0 6px 16px rgba(35,197,94,0.35)}
-    .btn.gray{background:#6b7280}
+    /* Botones: usar estilos de brand.css (.btn, .btn-primary, .btn-outline) */
     .label{font-weight:600;color:#374151}
     .value{color:#111827}
     .photo{border:1px dashed #d1d5db;border-radius:8px;padding:12px;background:#fff}
@@ -26,30 +26,30 @@
     .status-green{background:#dcfce7;color:#166534}
     .status-orange{background:#ffedd5;color:#c2410c}
     .status-gray{background:#e5e7eb;color:#374151}
-    /* topbar y navegación */
-    .topbar { position: sticky; top: 0; z-index: 10; background: #0b2a3c; color: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
-    .brand svg { width: 28px; height: 28px; }
-    .nav { display: flex; gap: 8px; }
-    .nav a { color: #e5e7eb; text-decoration: none; font-weight: 600; padding: 8px 12px; border-radius: 999px; }
-    .nav a:hover { background: rgba(255,255,255,0.1); }
-    .nav a.active { background: #22c55e; color: #062b1a; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); }
-    header.topbar, .container { position: relative; z-index: 1; }
+    /* navegación reutiliza brand.css */
+    header.navbar, .container { position: relative; z-index: 1; }
     /* capa decorativa SVG */
     .bg-illustration { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.22; background-repeat: no-repeat; background-position: center; background-size: cover; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%230ea5a7' stop-opacity='0.0'/><stop offset='1' stop-color='%230f4f64' stop-opacity='0.0'/></linearGradient></defs><rect width='1600' height='900' fill='url(%23g)'/><g stroke='%23ffffff' stroke-opacity='0.35' stroke-width='2' fill='none'><path d='M100 700 h80 v-120 h60 v160 h70 v-220 h90 v260 h80 v-140 h70 v100 h100 v-180 h120 v220 h90 v-60 h60 v-160 h80 v220 h90'/><rect x='140' y='620' width='26' height='50' rx='6'/><rect x='210' y='580' width='18' height='90' rx='4'/><circle cx='310' cy='660' r='22'/><path d='M300 680 h20 m-10 -20 v40'/><rect x='480' y='540' width='60' height='180'/><path d='M510 540 v180 M490 560 h40 M490 600 h40 M490 640 h40'/><rect x='800' y='560' width='80' height='160'/><path d='M840 560 v160 M820 580 h40 M820 620 h40 M820 660 h40'/><rect x='1020' y='520' width='120' height='200'/><path d='M1060 520 v200 M1040 540 h40 M1040 580 h40 M1040 620 h40 M1040 660 h40'/><path d='M1300 700 h100 m-50 -40 v80'/><rect x='1260' y='600' width='24' height='90' rx='5'/></g></svg>"); }
   </style>
 </head>
 <body>
 <div class="bg-illustration" aria-hidden="true"></div>
-<header class="topbar">
-  <div class="brand">
-    <!-- Logo SVG eliminado -->
-    <span>Barrio Limpio</span>
+<header class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <span class="logo">BL</span>
+      <span>Barrio Limpio</span>
+    </a>
+    <nav class="menu">
+      <a href="/">Inicio</a>
+      <a href="/#acerca">Acerca</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
+    <div class="cta">
+      <a class="btn btn-outline" href="/dashboard/official">Volver</a>
+      <a class="btn btn-primary" href="/logout" onclick="event.preventDefault(); fetch('/logout',{method:'POST', credentials:'include'}).then(()=>location.href='/login');">Cerrar sesión</a>
+    </div>
   </div>
-  <nav class="nav">
-    <a href="/">Inicio</a>
-    <a href="https://t.me/SantiagoTH0bot" target="_blank" rel="noopener">Ayuda</a>
-  </nav>
 </header>
 <div class="container">
   <nav class="breadcrumbs">
@@ -65,7 +65,7 @@
       <div class="muted">Creado: {{ $report->created_at ? $report->created_at->format('d/m/Y H:i') : '—' }}</div>
     </div>
     <div>
-      <a class="btn gray" href="/dashboard/official/reports">Volver</a>
+      <a class="btn btn-primary" href="/dashboard/official/reports">Volver</a>
     </div>
   </header>
 
@@ -95,8 +95,22 @@
     <div class="card">
       <h3>Fotografía</h3>
       <div class="photo">
-        @if($report->photo_url)
-          <img src="{{ $report->photo_url }}" alt="Foto reporte #{{ $report->id }}">
+        @php
+          $photo = $report->photo_url;
+          if ($photo && str_starts_with($photo, 'http://')) {
+            $photo = 'https://'.substr($photo, 7);
+          }
+          // Corrige registros antiguos que guardaron ruta en /storage
+          if ($photo && str_contains($photo, '/storage/')) {
+            $photo = str_replace('/storage/', '/uploads/', $photo);
+          }
+          // Evita intentar cargar la carpeta /uploads (sin archivo)
+          if ($photo && rtrim($photo, '/') === '/uploads') {
+            $photo = null;
+          }
+        @endphp
+        @if($photo)
+          <img src="{{ $photo }}" alt="Foto reporte #{{ $report->id }}">
         @else
           <div class="muted">Sin foto subida</div>
         @endif
@@ -109,6 +123,6 @@
     <p style="white-space:pre-wrap">{{ $report->description ?? 'Sin descripción.' }}</p>
   </div>
 </div>
-
+@include('dashboard.partials.jivochat')
 </body>
 </html>

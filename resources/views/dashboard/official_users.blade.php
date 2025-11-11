@@ -4,15 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Administración de Usuarios - Barrio Limpio</title>
+  <link rel="stylesheet" href="{{ asset('css/brand.css') }}">
   <style>
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif; margin: 0; background: linear-gradient(135deg, #0ea5a7 0%, #0b7a88 45%, #0f4f64 100%); color: #0f172a; min-height: 100vh; position: relative; }
     .container{max-width:1000px;margin:40px auto;background:#ffffff;border:none;border-radius:18px;box-shadow:0 18px 40px rgba(3,102,94,0.15);padding:24px}
-    header{display:flex;align-items:center;justify-content:space-between}h1{font-size:22px;margin:0}.muted{color:#6b7280}
+    .container > header{display:flex;align-items:center;justify-content:space-between}h1{font-size:22px;margin:0}.muted{color:#6b7280}
     .card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:16px;margin-top:16px}
-    a.button,.btn{display:inline-block;background:linear-gradient(90deg, #2ccd6f 0%, #11b072 100%);color:#fff;text-decoration:none;padding:10px 14px;border-radius:12px;border:none;cursor:pointer;box-shadow:0 6px 16px rgba(35,197,94,0.35)}
-    .btn.gray{background:#6b7280}
-    a.button:hover,.btn:hover{filter:brightness(1.06)}
-    a.button:active,.btn:active{transform:translateY(1px)}
+    /* Botones: usar estilos de brand.css (.btn, .btn-primary, .btn-outline) */
     table{width:100%;border-collapse:collapse;margin-top:12px}
     th,td{border-bottom:1px solid #e5e7eb;padding:8px;text-align:left}
     .grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:16px}
@@ -26,29 +24,29 @@
     .breadcrumbs{font-size:14px;color:#6b7280;margin-bottom:12px}
     .breadcrumbs a{color:#2563eb;text-decoration:none}
     .breadcrumbs .sep{color:#9ca3af;margin:0 6px}
-    /* topbar y navegación */
-    .topbar { position: sticky; top: 0; z-index: 10; background: #0b2a3c; color: #fff; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: .2px; }
-    .brand svg { width: 28px; height: 28px; }
-    .nav { display: flex; gap: 8px; }
-    .nav a { color: #e5e7eb; text-decoration: none; font-weight: 600; padding: 8px 12px; border-radius: 999px; }
-    .nav a:hover { background: rgba(255,255,255,0.1); }
-    .nav a.active { background: #22c55e; color: #062b1a; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35); }
-    header.topbar, .container { position: relative; z-index: 1; }
+    /* navegación reutiliza brand.css */
+    header.navbar, .container { position: relative; z-index: 1; }
     /* capa decorativa SVG */
     .bg-illustration { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.22; background-repeat: no-repeat; background-position: center; background-size: cover; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%230ea5a7' stop-opacity='0.0'/><stop offset='1' stop-color='%230f4f64' stop-opacity='0.0'/></linearGradient></defs><rect width='1600' height='900' fill='url(%23g)'/><g stroke='%23ffffff' stroke-opacity='0.35' stroke-width='2' fill='none'><path d='M100 700 h80 v-120 h60 v160 h70 v-220 h90 v260 h80 v-140 h70 v100 h100 v-180 h120 v220 h90 v-60 h60 v-160 h80 v220 h90'/><rect x='140' y='620' width='26' height='50' rx='6'/><rect x='210' y='580' width='18' height='90' rx='4'/><circle cx='310' cy='660' r='22'/><path d='M300 680 h20 m-10 -20 v40'/><rect x='480' y='540' width='60' height='180'/><path d='M510 540 v180 M490 560 h40 M490 600 h40 M490 640 h40'/><rect x='800' y='560' width='80' height='160'/><path d='M840 560 v160 M820 580 h40 M820 620 h40 M820 660 h40'/><rect x='1020' y='520' width='120' height='200'/><path d='M1060 520 v200 M1040 540 h40 M1040 580 h40 M1040 620 h40 M1040 660 h40'/><path d='M1300 700 h100 m-50 -40 v80'/><rect x='1260' y='600' width='24' height='90' rx='5'/></g></svg>"); }
   </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <!-- Logo SVG eliminado -->
-    <span>Barrio Limpio</span>
+<header class="navbar">
+  <div class="nav-inner">
+    <a href="/" class="brand">
+      <span class="logo">BL</span>
+      <span>Barrio Limpio</span>
+    </a>
+    <nav class="menu">
+      <a href="/">Inicio</a>
+      <a href="/#acerca">Acerca</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
+    <div class="cta">
+      <a class="btn btn-outline" href="/dashboard/official">Volver</a>
+      <a class="btn btn-primary" href="/logout" onclick="event.preventDefault(); fetch('/logout',{method:'POST', credentials:'include'}).then(()=>location.href='/login');">Cerrar sesión</a>
+    </div>
   </div>
-  <nav class="nav">
-    <a href="/" >Inicio</a>
-    <a href="https://t.me/SantiagoTH0bot" target="_blank" rel="noopener">Ayuda</a>
-  </nav>
 </header>
 <div class="bg-illustration"></div>
 <div class="container">
@@ -64,7 +62,7 @@
       <div class="muted">Hola, {{ auth()->user()->name }} ({{ auth()->user()->email }}) — Rol: {{ ['citizen'=>'ciudadano','official'=>'admin','crew'=>'colaborador'][auth()->user()->role] ?? auth()->user()->role }}</div>
     </div>
     <div>
-      <a href="/dashboard/official" class="button">Volver al panel</a>
+      <a href="/dashboard/official" class="btn btn-primary">Volver al panel</a>
     </div>
   </header>
 
@@ -79,8 +77,8 @@
           </select>
         </div>
         <div style="flex:0 0 auto" class="flex">
-          <button id="btn-filter" class="btn">Filtrar</button>
-          <button id="btn-clear" class="btn gray">Limpiar</button>
+          <button id="btn-filter" class="btn btn-primary">Filtrar</button>
+          <button id="btn-clear" class="btn btn-outline">Limpiar</button>
         </div>
       </div>
     </div>
@@ -95,7 +93,7 @@
         </div>
         <div style="flex:1 1 200px"><input id="create-password" type="password" class="input" placeholder="Contraseña" /></div>
         <div style="flex:1 1 200px"><input id="create-password-confirm" type="password" class="input" placeholder="Repite contraseña" /></div>
-        <div style="flex:0 0 auto"><button id="btn-create" class="btn">Crear</button></div>
+        <div style="flex:0 0 auto"><button id="btn-create" class="btn btn-primary">Crear</button></div>
       </div>
       <div id="create-feedback" class="feedback"></div>
     </div>
@@ -118,9 +116,9 @@
       </table>
       <div id="users-feedback" class="feedback"></div>
       <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
-        <button id="prev-page" class="btn gray">Anterior</button>
+        <button id="prev-page" class="btn btn-outline">Anterior</button>
         <span id="page-info" class="feedback"></span>
-        <button id="next-page" class="btn">Siguiente</button>
+        <button id="next-page" class="btn btn-primary">Siguiente</button>
         <label class="feedback" style="margin-left:12px">Por página
           <select id="per-page" class="select" style="margin-left:4px">
             <option value="10">10</option>
@@ -160,8 +158,8 @@ function createRow(u){
       </div>
     </td>
     <td>
-      <button class="btn save">Guardar</button>
-      <button class="btn gray delete">Eliminar</button>
+            <button class="btn btn-primary save" type="button">Guardar</button>
+            <button class="btn btn-outline gray delete" type="button">Eliminar</button>
     </td>
   `;
   return tr;
@@ -217,11 +215,12 @@ refresh();
 function saveUser(id, payload){
   const feedback=document.getElementById('users-feedback');
   feedback.textContent='Guardando usuario...';
+  const body = new URLSearchParams(payload);
   return fetch(`/official/users/${id}`,{
     method:'POST',
-    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Accept':'application/json'},
     credentials:'same-origin',
-    body: JSON.stringify(payload)
+    body
   }).then(r=>{if(!r.ok) return r.json().then(j=>{throw new Error(j.message||'Error al guardar')}); return r.json();})
     .then(d=>{feedback.textContent=d.message||'Usuario actualizado'; return d;})
     .catch(err=>{feedback.textContent=err.message; throw err;});
@@ -261,15 +260,24 @@ function createUser(){
     return;
   }
   feedback.textContent='Creando usuario...';
+  const body = new URLSearchParams({name,email,role, password: pwd});
   return fetch('/official/users',{
     method:'POST',
-    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Accept':'application/json'},
     credentials:'same-origin',
-    body: JSON.stringify({name,email,role, password: pwd})
-  }).then(r=>r.json().then(j=>({ok:r.ok, body:j})))
+    body
+  }).then(async r=>{
+      const ct=(r.headers.get('content-type')||'').toLowerCase();
+      const body= ct.includes('application/json') ? await r.json() : await r.text();
+      return {ok:r.ok, body};
+  })
     .then(({ok, body})=>{
-      if(!ok) throw new Error(body.message||'Error al crear usuario');
-      feedback.textContent=body.message||'Usuario creado';
+      if(!ok){
+        const msg = typeof body==='string' ? (body.replace(/<[^>]*>/g,' ').trim() || 'Error al crear usuario') : (body.message||'Error al crear usuario');
+        throw new Error(msg);
+      }
+      const message = typeof body==='string' ? 'Usuario creado' : (body.message||'Usuario creado');
+      feedback.textContent= message;
       // limpiar
       document.getElementById('create-name').value='';
       document.getElementById('create-email').value='';
@@ -283,14 +291,25 @@ function createUser(){
 function deleteUser(id){
   const feedback=document.getElementById('users-feedback');
   feedback.textContent='Eliminando usuario...';
-  return fetch(`/official/users/${id}`,{
-    method:'DELETE',
-    headers:{'Accept':'application/json'},
-    credentials:'same-origin'
-  }).then(r=>r.json().then(j=>({ok:r.ok, body:j})))
+  // Usar POST /delete como fallback para hostings que bloquean DELETE; petición simple sin cabeceras extra
+  const body = new URLSearchParams({action:'delete'});
+  return fetch(`/official/users/${id}/delete`,{
+    method:'POST',
+    headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Accept':'application/json'},
+    credentials:'same-origin',
+    body
+  }).then(async r=>{
+      const ct=(r.headers.get('content-type')||'').toLowerCase();
+      const body= ct.includes('application/json') ? await r.json() : await r.text();
+      return {ok:r.ok, body};
+  })
     .then(({ok, body})=>{
-      if(!ok) throw new Error(body.message||'No se pudo eliminar');
-      feedback.textContent=body.message||'Usuario eliminado';
+      if(!ok){
+        const msg = typeof body==='string' ? (body.replace(/<[^>]*>/g,' ').trim() || 'No se pudo eliminar') : (body.message||'No se pudo eliminar');
+        throw new Error(msg);
+      }
+      const message = typeof body==='string' ? 'Usuario eliminado' : (body.message||'Usuario eliminado');
+      feedback.textContent= message;
       loadUsers({ q: document.getElementById('filter-q').value.trim(), role: document.getElementById('filter-role').value });
     })
     .catch(err=>{feedback.textContent=err.message});
@@ -345,6 +364,6 @@ document.getElementById('btn-create').addEventListener('click', ()=>{
 initRoles();
 loadUsers();
 </script>
-
+@include('dashboard.partials.jivochat')
 </body>
 </html>

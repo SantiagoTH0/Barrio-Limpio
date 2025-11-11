@@ -56,6 +56,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Asset URL Prefix
+    |--------------------------------------------------------------------------
+    |
+    | Allows prefixing generated asset URLs. Set ASSET_URL in your .env when
+    | your public assets are served from a sub-path (e.g. "/public").
+    | Example: ASSET_URL=/public will produce "/public/css/brand.css".
+    |
+    */
+
+    'asset_url' => env('ASSET_URL', null),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

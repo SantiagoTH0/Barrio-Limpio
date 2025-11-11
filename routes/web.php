@@ -170,6 +170,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/official/users', [\App\Http\Controllers\AdminDashboardController::class, 'usersStore'])->name('official.users.store')->withoutMiddleware([VerifyCsrfToken::class]);
         Route::post('/official/users/{user}', [\App\Http\Controllers\AdminDashboardController::class, 'usersUpdate'])->name('official.users.update')->withoutMiddleware([VerifyCsrfToken::class]);
         Route::delete('/official/users/{user}', [\App\Http\Controllers\AdminDashboardController::class, 'usersDestroy'])->name('official.users.destroy')->withoutMiddleware([VerifyCsrfToken::class]);
+        // Fallback para hostings que bloquean DELETE: endpoint POST específico para borrar
+        Route::post('/official/users/{user}/delete', [\App\Http\Controllers\AdminDashboardController::class, 'usersDestroy'])->name('official.users.destroy.post')->withoutMiddleware([VerifyCsrfToken::class]);
     });
     Route::get('/dashboard/crew', fn () => view('dashboard.crew'))
         ->middleware('role:crew')

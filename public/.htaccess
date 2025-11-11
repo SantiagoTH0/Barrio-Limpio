@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Allow certificate validation files (ZeroSSL/Let's Encrypt)
+    # Serve any request under /.well-known/ directly without rewriting
+    RewriteRule ^\.well-known/ - [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
